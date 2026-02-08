@@ -90,15 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!isScrolling) {
                     window.requestAnimationFrame(() => {
                         // Buffer to make it smooth
-                        // When wrapping, temporarily disable snap to avoid visual glitch
-                        if (gallery.scrollLeft <= 10) {
-                            gallery.style.scrollSnapType = 'none';
+                        // When wrapping, we just jump. The browser's scroll snap should handle the landing if we align correctly.
+                        // Removing the scrollSnapType manipulation to avoid thrashing/jitter.
+                        if (gallery.scrollLeft <= 20) {
                             gallery.scrollLeft = singleSetWidth + gallery.scrollLeft;
-                            setTimeout(() => { gallery.style.scrollSnapType = 'x mandatory'; }, 0);
-                        } else if (gallery.scrollLeft >= singleSetWidth * 2 - 10) {
-                            gallery.style.scrollSnapType = 'none';
+                        } else if (gallery.scrollLeft >= singleSetWidth * 2 - 20) {
                             gallery.scrollLeft = gallery.scrollLeft - singleSetWidth;
-                            setTimeout(() => { gallery.style.scrollSnapType = 'x mandatory'; }, 0);
                         }
                         isScrolling = false;
                     });
