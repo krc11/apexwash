@@ -84,30 +84,43 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initial position: Start of the middle (original) set
             gallery.scrollLeft = singleSetWidth;
 
-            // Scroll Handler
-            gallery.addEventListener('scroll', () => {
-                // Buffer to make it smooth
-                if (gallery.scrollLeft <= 10) {
-                    gallery.scrollLeft = singleSetWidth + gallery.scrollLeft;
-                } else if (gallery.scrollLeft >= singleSetWidth * 2 - 10) {
-                    gallery.scrollLeft = gallery.scrollLeft - singleSetWidth;
+            // Scroll Handler with RequestAnimationFrame (Throttling)
+            let isScrolling = false;
+            const checkScroll = () => {
+                if (!isScrolling) {
+                    window.requestAnimationFrame(() => {
+                        // Buffer to make it smooth
+                        // When wrapping, temporarily disable snap to avoid visual glitch
+                        if (gallery.scrollLeft <= 10) {
+                            gallery.style.scrollSnapType = 'none';
+                            gallery.scrollLeft = singleSetWidth + gallery.scrollLeft;
+                            setTimeout(() => { gallery.style.scrollSnapType = 'x mandatory'; }, 0);
+                        } else if (gallery.scrollLeft >= singleSetWidth * 2 - 10) {
+                            gallery.style.scrollSnapType = 'none';
+                            gallery.scrollLeft = gallery.scrollLeft - singleSetWidth;
+                            setTimeout(() => { gallery.style.scrollSnapType = 'x mandatory'; }, 0);
+                        }
+                        isScrolling = false;
+                    });
+                    isScrolling = true;
                 }
-            });
+            };
+            gallery.addEventListener('scroll', checkScroll, { passive: true });
 
             // Auto-Play Logic
             let autoPlayInterval;
+            let isUserInteracting = false;
+
             const startAutoPlay = () => {
                 stopAutoPlay(); // Clear existing to be safe
+                if (isUserInteracting) return; // Don't start if user is touching
+
                 autoPlayInterval = setInterval(() => {
-                    // Scroll by one image width (approximate, smooth behavior handles the rest)
-                    // We use scrollBy with behavior: 'smooth' for the animation
-                    // If we are at a snap point, it should snap to the next one
-                    // However, manual scrollLeft calculation is more precise for the loop check
-                    // Let's use a small increment or trigger a scroll to the next snap point technique?
-                    // Simpler: just scrollBy the width of one item + gap
+                    if (isUserInteracting) return;
+
                     const itemWidth = (imgWidth + gap);
                     gallery.scrollBy({ left: itemWidth, behavior: 'smooth' });
-                }, 3000); // 3 seconds
+                }, 3000);
             };
 
             const stopAutoPlay = () => {
@@ -117,21 +130,26 @@ document.addEventListener('DOMContentLoaded', () => {
             // Start initially
             startAutoPlay();
 
-            // Pause on interaction
-            gallery.addEventListener('touchstart', stopAutoPlay, { passive: true });
-            gallery.addEventListener('touchmove', stopAutoPlay, { passive: true });
+            // Interaction Handlers
+            const handleInteractionStart = () => {
+                isUserInteracting = true;
+                stopAutoPlay();
+            };
 
-            // Resume after interaction ends
-            gallery.addEventListener('touchend', () => {
+            const handleInteractionEnd = () => {
+                isUserInteracting = false;
                 // Delay resume to let the user finish looking/settling
                 setTimeout(startAutoPlay, 3000);
-            });
+            };
 
-            // Also pause on mouse interaction for desktop testing or hybrid devices
-            gallery.addEventListener('mouseenter', stopAutoPlay);
-            gallery.addEventListener('mouseleave', () => {
-                startAutoPlay();
-            });
+            // Touch
+            gallery.addEventListener('touchstart', handleInteractionStart, { passive: true });
+            gallery.addEventListener('touchmove', handleInteractionStart, { passive: true });
+            gallery.addEventListener('touchend', handleInteractionEnd);
+
+            // Mouse
+            gallery.addEventListener('mouseenter', handleInteractionStart);
+            gallery.addEventListener('mouseleave', handleInteractionEnd);
         };
 
         // Run calculation after layout

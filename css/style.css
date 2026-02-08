@@ -548,6 +548,7 @@ ul {
         gap: 15px;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        will-change: scroll-position;
     }
 
     .gallery-grid::-webkit-scrollbar {
