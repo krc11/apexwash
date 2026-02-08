@@ -559,6 +559,9 @@ ul {
         flex: 0 0 85%;
         scroll-snap-align: center;
         height: 250px;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
     }
 }
 

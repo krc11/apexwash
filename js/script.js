@@ -78,23 +78,26 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstImg) return;
 
             const imgWidth = firstImg.offsetWidth;
-            const gap = 15; // from CSS
+            const style = window.getComputedStyle(gallery);
+            const gap = parseFloat(style.columnGap) || parseFloat(style.gap) || 15;
             const singleSetWidth = (imgWidth + gap) * images.length;
 
             // Initial position: Start of the middle (original) set
-            gallery.scrollLeft = singleSetWidth;
+            if (gallery.scrollLeft === 0) {
+                gallery.scrollLeft = singleSetWidth;
+            }
 
             // Scroll Handler with RequestAnimationFrame (Throttling)
             let isScrolling = false;
             const checkScroll = () => {
                 if (!isScrolling) {
                     window.requestAnimationFrame(() => {
-                        // Buffer to make it smooth
+                        // Buffer trimmed to 5px for precision
                         // When wrapping, we just jump. The browser's scroll snap should handle the landing if we align correctly.
                         // Removing the scrollSnapType manipulation to avoid thrashing/jitter.
-                        if (gallery.scrollLeft <= 20) {
+                        if (gallery.scrollLeft <= 5) {
                             gallery.scrollLeft = singleSetWidth + gallery.scrollLeft;
-                        } else if (gallery.scrollLeft >= singleSetWidth * 2 - 20) {
+                        } else if (gallery.scrollLeft >= singleSetWidth * 2 - 5) {
                             gallery.scrollLeft = gallery.scrollLeft - singleSetWidth;
                         }
                         isScrolling = false;
@@ -109,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let isUserInteracting = false;
 
             const startAutoPlay = () => {
-                stopAutoPlay(); // Clear existing to be safe
+                stopAutoPlay(); // Clear existing
                 if (isUserInteracting) return; // Don't start if user is touching
 
                 autoPlayInterval = setInterval(() => {
