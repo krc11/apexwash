@@ -228,18 +228,22 @@
 
                 <div class="contact-form-container">
                     <h3>Request a Booking</h3>
-                    <form id="bookingForm">
+                    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+                    <form id="bookingForm"
+                        action="https://docs.google.com/forms/d/e/1FAIpQLSfbHEbIt6fbyeQ98pXJb45ACMJylfldow91nZhvuH8xuV4GSg/formResponse"
+                        method="POST" target="hidden_iframe">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" id="name" name="name" required placeholder="Your Name">
+                            <input type="text" id="name" name="entry.416120477" required placeholder="Your Name">
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone</label>
-                            <input type="tel" id="phone" name="phone" required placeholder="Your Phone Number">
+                            <input type="tel" id="phone" name="entry.390666050" required
+                                placeholder="Your Phone Number">
                         </div>
                         <div class="form-group">
                             <label for="service">Service Interested In</label>
-                            <select id="service" name="service">
+                            <select id="service" name="entry.691981963">
                                 <option value="Buff & Polish">Buff & Polish</option>
                                 <option value="Paint Correction">Paint Correction</option>
                                 <option value="Paint Protection">Paint Protection</option>
@@ -249,7 +253,7 @@
                         </div>
                         <div class="form-group">
                             <label for="message">Message (Optional)</label>
-                            <textarea id="message" name="message" rows="4"
+                            <textarea id="message" name="entry.1201794346" rows="4"
                                 placeholder="Vehicle details, location, etc."></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary btn-submit">Send Enquiry</button>

@@ -23,19 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('bookingForm');
     if (form) {
         form.addEventListener('submit', (e) => {
-            e.preventDefault();
-
             // Basic validation check (HTML5 does most of it)
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const service = document.getElementById('service').value;
 
             if (name && phone && service) {
-                // Here you would typically send the data to a backend
-                // For this static demo, we'll alert the user and clear the form
-                alert(`Thank you, ${name}! We have received your request for ${service}. We will contact you at ${phone} shortly.`);
-                form.reset();
+                // The form is submitted to the hidden iframe.
+                // We show a success message and reset the form.
+                alert('Thank you, we\'ll contact you soon.');
+
+                // Allow the form to actually submit to the iframe
+                // We don't preventDefault() if we want it to submit to the iframe
+                // BUT, to keep the UI clean, we can construct the submission manually or just let it fly.
+                // Since we have target="hidden_iframe", let's remove e.preventDefault() for the actual submission
+                // Wait a moment for the submission to trigger, then reset
+                setTimeout(() => {
+                    form.reset();
+                }, 1000);
             } else {
+                e.preventDefault(); // Stop submission if invalid
                 alert('Please fill in all required fields.');
             }
         });
